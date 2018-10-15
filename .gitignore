@@ -3,3 +3,7 @@
 ################################################################################
 
 /.vs
+/Apliu.Data.MongoDB/obj
+/Apliu.Data.MongoDB/bin/Debug
+/ConsoleEqueue/obj
+/ConsoleEqueue/bin/Debug
