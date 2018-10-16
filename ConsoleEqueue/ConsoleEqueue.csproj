@@ -72,6 +72,10 @@
       <Project>{f77ebfba-1c61-4e4f-87ff-0c8c696dc7f0}</Project>
       <Name>Apliu.Data.MongoDB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Apliu.Standard.MongoDB\Apliu.Standard.MongoDB.csproj">
+      <Project>{c98ba811-b766-4d96-82ea-6a49239818d1}</Project>
+      <Name>Apliu.Standard.MongoDB</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

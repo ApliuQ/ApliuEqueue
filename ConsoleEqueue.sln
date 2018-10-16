@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleEqueue", "ConsoleEqu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apliu.Data.MongoDB", "Apliu.Data.MongoDB\Apliu.Data.MongoDB.csproj", "{F77EBFBA-1C61-4E4F-87FF-0C8C696DC7F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apliu.Standard.MongoDB", "Apliu.Standard.MongoDB\Apliu.Standard.MongoDB.csproj", "{C98BA811-B766-4D96-82EA-6A49239818D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F77EBFBA-1C61-4E4F-87FF-0C8C696DC7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F77EBFBA-1C61-4E4F-87FF-0C8C696DC7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F77EBFBA-1C61-4E4F-87FF-0C8C696DC7F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C98BA811-B766-4D96-82EA-6A49239818D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C98BA811-B766-4D96-82EA-6A49239818D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C98BA811-B766-4D96-82EA-6A49239818D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C98BA811-B766-4D96-82EA-6A49239818D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

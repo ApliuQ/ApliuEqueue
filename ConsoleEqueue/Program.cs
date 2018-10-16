@@ -1,5 +1,4 @@
-﻿using Apliu.Data.MongoDB;
-using System;
+﻿using System;
 
 namespace ConsoleEqueue
 {
@@ -7,7 +6,14 @@ namespace ConsoleEqueue
     {
         static void Main(string[] args)
         {
-            DbTestClass.Test();
+            //Apliu.Data.MongoDB.DbTestClass.Test();
+
+
+            Apliu.Standard.MongoDB.DbTestClass.Test();
+
+
+
+
             Console.ReadKey();
         }
     }
