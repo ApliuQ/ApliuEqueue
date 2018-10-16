@@ -1,11 +1,10 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Apliu.Data.MongoDB
 {
@@ -88,6 +87,108 @@ namespace Apliu.Data.MongoDB
         }
 
         /// <summary>
+        /// 获取字典中的键值对查询条件对象（值完全相等）
+        /// </summary>
+        /// <param name="findDictionary"></param>
+        /// <returns></returns>
+        private FilterDefinition<BsonDocument> GetFilterEquals(Dictionary<String, Object> findDictionary)
+        {
+            List<FilterDefinition<BsonDocument>> listFilterDefinitions = new List<FilterDefinition<BsonDocument>>() { };
+            foreach (KeyValuePair<String, Object> tempPair in findDictionary)
+            {
+                listFilterDefinitions.Add(Builders<BsonDocument>.Filter.Eq(tempPair.Key, tempPair.Value));
+            }
+            return Builders<BsonDocument>.Filter.And(listFilterDefinitions);
+        }
+
+        /// <summary>
+        /// 获取字典中的键值对查询条件对象（大于或等于指定值）
+        /// </summary>
+        /// <param name="findDictionary"></param>
+        /// <returns></returns>
+        private FilterDefinition<BsonDocument> GetFilterGreater(Dictionary<String, Object> findDictionary)
+        {
+            List<FilterDefinition<BsonDocument>> listFilterDefinitions = new List<FilterDefinition<BsonDocument>>() { };
+            foreach (KeyValuePair<String, Object> tempPair in findDictionary)
+            {
+                listFilterDefinitions.Add(Builders<BsonDocument>.Filter.Gte(tempPair.Key, tempPair.Value));
+            }
+            return Builders<BsonDocument>.Filter.And(listFilterDefinitions);
+        }
+
+        /// <summary>
+        /// 获取字典中的键值对查询条件对象（小于或等于指定值）
+        /// </summary>
+        /// <param name="findDictionary"></param>
+        /// <returns></returns>
+        private FilterDefinition<BsonDocument> GetFilterLess(Dictionary<String, Object> findDictionary)
+        {
+            List<FilterDefinition<BsonDocument>> listFilterDefinitions = new List<FilterDefinition<BsonDocument>>() { };
+            foreach (KeyValuePair<String, Object> tempPair in findDictionary)
+            {
+                listFilterDefinitions.Add(Builders<BsonDocument>.Filter.Lte(tempPair.Key, tempPair.Value));
+            }
+            return Builders<BsonDocument>.Filter.And(listFilterDefinitions);
+        }
+
+        /// <summary>
+        /// 获取字典中的键值对查询条件对象（包含指定值）
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        private FilterDefinition<BsonDocument> GetFilterIn(String key, IEnumerable<Object> values)
+        {
+            return Builders<BsonDocument>.Filter.In(key, values);
+        }
+
+        /// <summary>
+        /// 获取字典中的键值对更新数据对象
+        /// </summary>
+        /// <param name="updateDictionary"></param>
+        /// <returns></returns>
+        private UpdateDefinition<BsonDocument> GetUpdateDefinition(Dictionary<String, Object> updateDictionary)
+        {
+            List<UpdateDefinition<BsonDocument>> listUpdateDefinition = new List<UpdateDefinition<BsonDocument>>() { };
+            foreach (KeyValuePair<String, Object> tempPair in updateDictionary)
+            {
+                listUpdateDefinition.Add(Builders<BsonDocument>.Update.Set(tempPair.Key, tempPair.Value));
+            }
+            return Builders<BsonDocument>.Update.Combine(listUpdateDefinition);
+        }
+
+        /// <summary>
+        /// 根据指定条件查找数据 Builders<BsonDocument>.Filter
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public List<T> FindObject<T>(FilterDefinition<BsonDocument> filter)
+        {
+            List<T> listResult = null;
+            try
+            {
+                IMongoCollection<BsonDocument> mongoCollection = GetCollection<BsonDocument>();
+                List<BsonDocument> findResult = mongoCollection.Find(filter).ToList();
+                if (findResult != null)
+                {
+                    listResult = new List<T>() { };
+                    foreach (BsonDocument tempBosnDoc in findResult)
+                    {
+                        T t = JsonConvert.DeserializeObject<T>(tempBosnDoc.ToJsonNull_Id());
+                        listResult.Add(t);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return listResult;
+        }
+
+        /// <summary>
         /// 向集合中插入Json字符串
         /// </summary>
         /// <param name="jsonData"></param>
@@ -109,29 +210,194 @@ namespace Apliu.Data.MongoDB
             InsertJson(JsonConvert.SerializeObject(objData));
         }
 
-        public List<BsonDocument> FindObject(String key, String value)
+        /// <summary>
+        /// 根据指定键值查找数据（值完全相等）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public List<T> FindObjectList<T>(Dictionary<String, Object> findDictionary)
+        {
+            List<T> listResult = null;
+            try
+            {
+                FilterDefinition<BsonDocument> filter = GetFilterEquals(findDictionary);
+                listResult = FindObject<T>(filter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return listResult;
+        }
+
+        /// <summary>
+        /// 根据指定键值查找数据（大于或等于指定值）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public List<T> FindObjectGreater<T>(Dictionary<String, Object> findDictionary)
+        {
+            List<T> listResult = null;
+            try
+            {
+                FilterDefinition<BsonDocument> filter = GetFilterGreater(findDictionary);
+                listResult = FindObject<T>(filter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return listResult;
+        }
+
+        /// <summary>
+        /// 根据指定键值查找数据（小于或等于指定值）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public List<T> FindObjectLess<T>(Dictionary<String, Object> findDictionary)
+        {
+            List<T> listResult = null;
+            try
+            {
+                FilterDefinition<BsonDocument> filter = GetFilterLess(findDictionary);
+                listResult = FindObject<T>(filter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return listResult;
+        }
+
+        /// <summary>
+        /// 根据指定键值查找数据（包含指定值）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public List<T> FindObjectIn<T>(String key, IEnumerable<Object> values)
+        {
+            List<T> listResult = null;
+            try
+            {
+                FilterDefinition<BsonDocument> filter = GetFilterIn(key, values);
+                listResult = FindObject<T>(filter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return listResult;
+        }
+
+        /// <summary>
+        /// 返回所有结果，然后使用Linq进行筛选
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public List<T> FindAllLinq<T>()
+        {
+            List<T> listResult = null;
+            try
+            {
+                IMongoCollection<BsonDocument> mongoCollection = GetCollection<BsonDocument>();
+                List<BsonDocument> findResult = mongoCollection.Find(Builders<BsonDocument>.Filter.Empty).ToList();
+                if (findResult != null)
+                {
+                    listResult = new List<T>() { };
+                    foreach (BsonDocument tempBosnDoc in findResult)
+                    {
+                        T t = JsonConvert.DeserializeObject<T>(tempBosnDoc.ToJsonNull_Id());
+                        listResult.Add(t);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return listResult;
+        }
+
+        /// <summary>
+        /// 根据指定键值查找数据
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public T FindObjectOne<T>(Dictionary<String, Object> findDictionary) where T : class
+        {
+            T objResult = default(T);
+            try
+            {
+                List<T> listResult = FindObjectList<T>(findDictionary);
+                if (listResult != null && listResult.Count > 0)
+                {
+                    objResult = listResult[0];
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return objResult;
+        }
+
+        /// <summary>
+        /// 根据指定键值查找数据
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public String FindJsonOne(Dictionary<String, Object> findDictionary)
+        {
+            String jsonResult = null;
+            try
+            {
+                Object objResult = FindObjectOne<Object>(findDictionary);
+                if (objResult != null)
+                {
+                    jsonResult = JsonConvert.SerializeObject(objResult);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return jsonResult;
+        }
+
+        /// <summary>
+        /// 删除指定键值, 并返回受影响的行数
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public Int64 DeleteMany(Dictionary<String, Object> findDictionary)
         {
             IMongoCollection<BsonDocument> mongoCollection = GetCollection<BsonDocument>();
-            FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq(key, value);
-            List<BsonDocument> findResult = mongoCollection.Find(filter).ToList();
-            return findResult;
+            FilterDefinition<BsonDocument> filter = GetFilterEquals(findDictionary);
+            DeleteResult deleteResult = mongoCollection.DeleteMany(filter);
+            return deleteResult.DeletedCount;
         }
 
-        public static void Test()
+        public Int64 UpdateMany(Dictionary<String, Object> findDic, Dictionary<String, Object> updateDic)
         {
-            String strCon = "mongodb://admin:apliu2018@140.143.5.141:27017";
-            String strDbn = "apliumq";
-            String strColl = "equeue";
-            MongoDBHelper mongoDBHelper = new MongoDBHelper(strCon, strDbn, strColl);
-
-            mongoDBHelper.FindObject("id", "1");
+            if (updateDic.Count <= 0) return 0;
+            IMongoCollection<BsonDocument> mongoCollection = GetCollection<BsonDocument>();
+            FilterDefinition<BsonDocument> filter = GetFilterEquals(findDic);
+            UpdateDefinition<BsonDocument> updateDefinition = GetUpdateDefinition(updateDic);
+            UpdateResult updateResult = mongoCollection.UpdateMany(filter, updateDefinition);
+            return updateResult.ModifiedCount;
         }
-    }
-
-    public class ObjData
-    {
-        public string id = "1";
-        public string name = "2";
-        public string remark = "3";
     }
 }

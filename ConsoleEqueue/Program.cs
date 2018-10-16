@@ -17,7 +17,7 @@ namespace ConsoleEqueue
         protected static IMongoClient _client;
         static void Main(string[] args)
         {
-            MongoDBHelper.Test();
+            DbTestClass.Test();
             Console.ReadKey();
         }
     }
