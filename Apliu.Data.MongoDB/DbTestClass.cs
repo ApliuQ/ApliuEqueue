@@ -10,7 +10,7 @@ namespace Apliu.Data.MongoDB
     {
         public static void Test()
         {
-            String strCon = "mongodb://admin:apliu2018@140.143.5.141:27017";
+            String strCon = String.Empty;
             String strDbn = "apliumq";
             String strColl = "equeue";
             MongoDBHelper mongoDBHelper = new MongoDBHelper(strCon, strDbn, strColl);
